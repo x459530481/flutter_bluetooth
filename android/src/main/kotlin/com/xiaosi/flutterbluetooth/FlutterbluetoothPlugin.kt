@@ -46,7 +46,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else if (call.method == "init") {
-      mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter() as Nothing?;
+      mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
       if (mBluetoothAdapter == null) {
 //        showTextToast("没有发现蓝牙模块,程序中止");
 //        finish();
