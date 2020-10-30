@@ -220,9 +220,9 @@ class FlutterbluetoothPlugin: MethodCallHandler {
                   if (mInputStream!!.available() > 0) {
                     val buffer = ByteArray(mInputStream!!.available())
                     mInputStream!!.read(buffer)
-                    
+                    println("buffer="+buffer)
                     val utf8tzt = String(buffer, Charsets.UTF_8)
-                    println(utf8tzt)
+                    println("utf8tzt="+utf8tzt)
 //                    //                                    String isotzt = new String(buffer,"ISO-8859-1" );
 ////                                    String gb2312tzt = new String(buffer,"GB2312" );
 ////                                    String gbktzt = new String(buffer,"GBK" );
