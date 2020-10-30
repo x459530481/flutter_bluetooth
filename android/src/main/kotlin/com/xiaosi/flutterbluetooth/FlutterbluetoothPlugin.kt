@@ -281,7 +281,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         if (device.name == null) return
 
         // 扫描到的设备是否存在于队列 如不存在则添加到队列
-          val mMap = mapOf("name" to '"' +device.name +'"', "address" to '"' +device.address +'"')
+          val mMap = mapOf("\"name\"" to '"' +device.name +'"', "\"address\"" to '"' +device.address +'"')
           mChannel!!.invokeMethod("found_result",mMap)
 
         // When discovery is finished, change the Activity title
