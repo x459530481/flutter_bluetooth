@@ -20,6 +20,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
+import kotlin.experimental.and
 
 
 class FlutterbluetoothPlugin: MethodCallHandler {
@@ -221,9 +222,10 @@ class FlutterbluetoothPlugin: MethodCallHandler {
                     val buffer:ByteArray = ByteArray(mInputStream!!.available())
                     
                     mInputStream!!.read(buffer)
-                    for (index in 0..buffer.size-1){
-                      println(hexStr2Str(buffer.get(index).toString()))
-                    }
+                    println(bytesToHexString(buffer))
+//                    for (index in 0..buffer.size-1){
+//                      println(bytesToHexString(buffer.get(index).to))
+//                    }
                     println("buffer="+buffer)
                     val utf8tzt = String(buffer, Charsets.UTF_8)
                     println("utf8tzt="+utf8tzt)
@@ -276,18 +278,24 @@ class FlutterbluetoothPlugin: MethodCallHandler {
   }
 
 
-  //解析：将16进制的字符串 hex转ascii字符串
-  fun hexStr2Str(hexStr: String): String? {
-    val str = "0123456789ABCDEF"
-    val hexs = hexStr.toCharArray()
-    val bytes = ByteArray(hexStr.length / 2)
-    var n: Int
-    for (i in bytes.indices) {
-      n = str.indexOf(hexs[2 * i]) * 16
-      n += str.indexOf(hexs[2 * i + 1])
-      bytes[i] = (n and 0xff).toByte()
+  //接收2：将byte【】转为16进制
+  fun bytesToHexString(src: ByteArray?): String? {
+    val sb = StringBuffer("")
+    if (src == null || src.size <= 0) {
+      return null
     }
-    return String(bytes)
+    for (i in src.indices) {
+      val v: Byte = src[i] and 0xFF.toByte()
+      val hv = Integer.toHexString(v.toInt()).toUpperCase()
+      if (hv.length < 2) {
+        sb.append(0)
+      }
+      sb.append(hv)
+      if (i != src.size - 1) {
+        sb.append(" ")
+      }
+    }
+    return sb.toString()
   }
 
   // The BroadcastReceiver that listens for discovered devices and
