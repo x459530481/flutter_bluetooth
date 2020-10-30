@@ -223,31 +223,31 @@ class FlutterbluetoothPlugin: MethodCallHandler {
                     
                     mInputStream!!.read(buffer)
                     println(bytesToHexString(buffer))
-//                    for (index in 0..buffer.size-1){
-//                      println(bytesToHexString(buffer.get(index).to))
-//                    }
-                    println("buffer="+buffer)
-                    val utf8tzt = String(buffer, Charsets.UTF_8)
-                    println("utf8tzt="+utf8tzt)
-
-//                    println("hexStr2Str="+hexStr2Str(buffer.toUByteArray().))
-//                    //                                    String isotzt = new String(buffer,"ISO-8859-1" );
-////                                    String gb2312tzt = new String(buffer,"GB2312" );
-////                                    String gbktzt = new String(buffer,"GBK" );
-////                                    String utf16tzt = new String(buffer,"UTF-16" );
-//                    println(utf8tzt)
-//                    //                                    System.out.println(isotzt);
-////                                    System.out.println(gb2312tzt);
-////                                    System.out.println(gbktzt);
-////                                    System.out.println(utf16tzt);
-//                    val msg = Message()
-//                    msg.what = 999
-//                    msg.obj = utf8tzt
-//                    sendMessage(msg)
+////                    for (index in 0..buffer.size-1){
+////                      println(bytesToHexString(buffer.get(index).to))
+////                    }
+//                    println("buffer="+buffer)
+//                    val utf8tzt = String(buffer, Charsets.UTF_8)
+//                    println("utf8tzt="+utf8tzt)
+//
+////                    println("hexStr2Str="+hexStr2Str(buffer.toUByteArray().))
+////                    //                                    String isotzt = new String(buffer,"ISO-8859-1" );
+//////                                    String gb2312tzt = new String(buffer,"GB2312" );
+//////                                    String gbktzt = new String(buffer,"GBK" );
+//////                                    String utf16tzt = new String(buffer,"UTF-16" );
+////                    println(utf8tzt)
+////                    //                                    System.out.println(isotzt);
+//////                                    System.out.println(gb2312tzt);
+//////                                    System.out.println(gbktzt);
+//////                                    System.out.println(utf16tzt);
+////                    val msg = Message()
+////                    msg.what = 999
+////                    msg.obj = utf8tzt
+////                    sendMessage(msg)
 
                     val msg = Message()
                     msg.what = 999
-                    msg.obj = utf8tzt
+                    msg.obj = bytesToHexString(buffer)!!.split(" ")
                     sendMessage(msg)
                   }
                   
