@@ -28,24 +28,35 @@ class _MyAppState extends State<MyApp> {
     this._channel.setMethodCallHandler((handler) {
       switch (handler.method) {
         case "connection_successful":
+          //连接成功
           log(handler.arguments.toString());
           break;
         case "connection_failed":
+          //连接出错
           log(handler.arguments.toString());
           break;
         case "disconnect_success":
+          //断开连接成功
           log(handler.arguments.toString());
           break;
         case "found_result":
+          //搜索结果
           log(handler.arguments.toString());
           break;
         case "found_finish":
+          //搜索结束
           log(handler.arguments.toString());
           break;
         case "no_bluetooth":
+          //设备没有蓝牙
           log(handler.arguments.toString());
           break;
         case "no_enabled_bluetooth":
+          //设备有蓝牙但未启用
+          log(handler.arguments.toString());
+          break;
+        case "received":
+          //蓝牙接收到的消息
           log(handler.arguments.toString());
           break;
       }

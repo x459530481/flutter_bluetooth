@@ -98,7 +98,18 @@ class FlutterbluetoothPlugin: MethodCallHandler {
     } else if (call.method == "discovery") {
         doDiscovery()
     } else if (call.method == "cancelDiscovery") {
-      mBluetoothAdapter?.cancelDiscovery()
+      try{
+        if(mBluetoothAdapter == null){
+          println("mBluetoothAdapter == null");
+        }
+        // If we're already discovering, stop it
+        if (mBluetoothAdapter!!.isDiscovering) {
+          mBluetoothAdapter!!.cancelDiscovery()
+        }
+      }catch (e:Exception){
+        println(e.toString())
+        handler.sendEmptyMessage(-1)
+      }
     } else if (call.method == "sendData") {
       var data: ByteArray? = call.argument<ByteArray>("byteArray")
       sendData(data);
@@ -134,18 +145,18 @@ class FlutterbluetoothPlugin: MethodCallHandler {
      * Start device discover with the BluetoothAdapter
      */
     private fun doDiscovery() {
-        // If we're already discovering, stop it
-        if (mBluetoothAdapter!!.isDiscovering) {
-          mBluetoothAdapter!!.cancelDiscovery()
-        }
-
       try{
         if(mBluetoothAdapter == null){
           println("mBluetoothAdapter == null");
         }
+        // If we're already discovering, stop it
+        if (mBluetoothAdapter!!.isDiscovering) {
+          mBluetoothAdapter!!.cancelDiscovery()
+        }
         mBluetoothAdapter!!.startDiscovery()
       }catch (e:Exception){
         println(e.toString())
+        handler.sendEmptyMessage(-1)
       }
     }
 
@@ -252,7 +263,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       } else if (msg.what === -1) {
           mChannel!!.invokeMethod("connection_failed","connection_failed")
       } else if (msg.what === 999) {
-        mChannel!!.invokeMethod("connection_failed",msg.obj)
+        mChannel!!.invokeMethod("received",msg.obj)
       }
     }
   }
