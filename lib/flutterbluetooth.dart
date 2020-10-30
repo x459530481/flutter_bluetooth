@@ -17,10 +17,16 @@ class Flutterbluetooth {
   static Future<void> connting(String macAddress) async {
     return _channel.invokeMethod('connting',{'macAddress':macAddress});
   }
+  static Future<void> disconnect() async {
+    return _channel.invokeMethod('disconnect');
+  }
   static Future<void> discovery() async {
     return _channel.invokeMethod('discovery');
   }
   static Future<void> cancelDiscovery() async {
     return _channel.invokeMethod('cancelDiscovery');
+  }
+  static Future<void> sendData(List byteArray) async {
+    return _channel.invokeMethod('sendData',{'byteArray':byteArray});
   }
 }

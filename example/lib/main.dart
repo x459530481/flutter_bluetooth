@@ -33,6 +33,9 @@ class _MyAppState extends State<MyApp> {
         case "connection_failed":
           log(handler.arguments.toString());
           break;
+        case "disconnect_success":
+          log(handler.arguments.toString());
+          break;
         case "found_result":
           log(handler.arguments.toString());
           break;

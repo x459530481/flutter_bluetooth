@@ -11,22 +11,26 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.Message
-import com.xiaosi.flutterbluetooth.reader.helper.ReaderHelper
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.*
 
 
 class FlutterbluetoothPlugin: MethodCallHandler {
 
   var mBluetoothAdapter:BluetoothAdapter? = null;
-  var mReaderHelper: ReaderHelper? = null
+//  var mReaderHelper: ReaderHelper? = null
+  var newserial: BluetoothSocket? = null
+  var mInputStream: InputStream? = null
+  var mOutputStream: OutputStream? = null
 
-    val myuuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+  val myuuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
   companion object {
     var mContext: Context? = null
     var mActivity: Activity? = null
@@ -85,16 +89,47 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       message.obj = address
       handler.sendMessage(message)
       result.success("Success")
+    } else if (call.method == "disconnect") {
+      if(newserial != null && !newserial!!.isConnected){
+        newserial!!.close()
+      }
+      mChannel!!.invokeMethod("disconnect_success","disconnect_success")
+      result.success("Success")
     } else if (call.method == "discovery") {
         doDiscovery()
     } else if (call.method == "cancelDiscovery") {
       mBluetoothAdapter?.cancelDiscovery()
+    } else if (call.method == "sendData") {
+      var data: ByteArray? = call.argument<ByteArray>("byteArray")
+      sendData(data);
     }  else {
       result.notImplemented()
     }
   }
 
-
+  fun sendData(data: ByteArray?) {
+    if (newserial != null && newserial!!.isConnected()) { //判断连接是否有效
+      try {
+        val outputStream: OutputStream = newserial!!.getOutputStream()
+        if (outputStream != null) {
+          try {
+            outputStream.write(data)
+          } catch (e: Exception) {
+            println( "outputStream.write null")
+            handler.sendEmptyMessage(-1)
+          }
+        } else {
+          println("outputStream is null")
+          handler.sendEmptyMessage(-1)
+        }
+      } catch (e: IOException) {
+        println("sendData: $e")
+        handler.sendEmptyMessage(-1)
+      }
+    }else{
+      handler.sendEmptyMessage(-1)
+    }
+  }
     /**
      * Start device discover with the BluetoothAdapter
      */
@@ -121,8 +156,11 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       if (msg.what === 0) {
         val address:String = msg.obj as String
         Thread(Runnable {
-          var newserial: BluetoothSocket? = null
+          
           try {
+            if(newserial != null && !newserial!!.isConnected){
+              newserial!!.close()
+            }
             val device: BluetoothDevice? = mBluetoothAdapter?.getRemoteDevice(address)
             newserial = device?.createRfcommSocketToServiceRecord(myuuid)
             newserial?.connect()
@@ -139,23 +177,69 @@ class FlutterbluetoothPlugin: MethodCallHandler {
             this.sendEmptyMessage(-1)
             return@Runnable
           }
+          
+          val message = Message()
+          message.what = 1
+          message.obj = address
+          this.sendMessage(message)
+          
           try {
-            mReaderHelper = ReaderHelper.getDefaultHelper()
-            mReaderHelper!!.setReader(newserial.inputStream, newserial.outputStream)
+//            mReaderHelper = ReaderHelper.getDefaultHelper()
+//            mReaderHelper!!.setReader(newserial!!.inputStream, newserial!!.outputStream)
+//
+////            val editor: SharedPreferences.Editor = IApplication.getInstance().getPreferences().edit()
+////            editor.putString(
+////                    SharepreferencesConstant.AppParam.BLUETOOTH_ADDRESS, address)
+////            editor.commit()
+////            this.sendEmptyMessage(1)
+//              val message = Message()
+//              message.what = 1
+//              message.obj = address
+//              this.sendMessage(message)
 
-//            val editor: SharedPreferences.Editor = IApplication.getInstance().getPreferences().edit()
-//            editor.putString(
-//                    SharepreferencesConstant.AppParam.BLUETOOTH_ADDRESS, address)
-//            editor.commit()
-//            this.sendEmptyMessage(1)
-              val message = Message()
-              message.what = 1
-              message.obj = address
-              this.sendMessage(message)
+            mInputStream = newserial!!.inputStream
+
+            mOutputStream = newserial!!.outputStream
+
+            //启动新线程去处理
+            while (true) {
+              if (mInputStream != null) {
+                try {
+                  Thread.sleep(1000)
+                  if (mInputStream!!.available() > 0) {
+                    val buffer = ByteArray(mInputStream!!.available())
+                    mInputStream!!.read(buffer)
+                    
+//                    val utf8tzt = String(buffer, Charsets.UTF_8)
+//                    //                                    String isotzt = new String(buffer,"ISO-8859-1" );
+////                                    String gb2312tzt = new String(buffer,"GB2312" );
+////                                    String gbktzt = new String(buffer,"GBK" );
+////                                    String utf16tzt = new String(buffer,"UTF-16" );
+//                    println(utf8tzt)
+//                    //                                    System.out.println(isotzt);
+////                                    System.out.println(gb2312tzt);
+////                                    System.out.println(gbktzt);
+////                                    System.out.println(utf16tzt);
+//                    val msg = Message()
+//                    msg.what = 999
+//                    msg.obj = utf8tzt
+//                    sendMessage(msg)
+
+                    val msg = Message()
+                    msg.what = 999
+                    msg.obj = buffer
+                    sendMessage(msg)
+                  }
+                  
+                } catch (e:Exception) {
+                  println("mInputStream read is null")
+                }
+              }
+            }
           } catch (e: Exception) {
             e.printStackTrace()
             try {
-              newserial.close()
+              newserial!!.close()
             } catch (e1: IOException) {
               e1.printStackTrace()
             }
@@ -167,6 +251,8 @@ class FlutterbluetoothPlugin: MethodCallHandler {
           mChannel!!.invokeMethod("connection_successful",msg.obj)
       } else if (msg.what === -1) {
           mChannel!!.invokeMethod("connection_failed","connection_failed")
+      } else if (msg.what === 999) {
+        mChannel!!.invokeMethod("connection_failed",msg.obj)
       }
     }
   }
