@@ -39,6 +39,12 @@ class _MyAppState extends State<MyApp> {
         case "found_finish":
           log(handler.arguments.toString());
           break;
+        case "no_bluetooth":
+          log(handler.arguments.toString());
+          break;
+        case "no_enabled_bluetooth":
+          log(handler.arguments.toString());
+          break;
       }
     });
 
