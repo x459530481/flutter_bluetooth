@@ -32,7 +32,7 @@ class Flutterbluetooth {
     return _channel.invokeMethod('cancelDiscovery');
   }
   //发送命令 发送内容（会触发蓝牙连接失败）
-  static Future<void> sendData(List byteArray) async {
+  static Future<void> sendData(Uint8List byteArray) async {
     return _channel.invokeMethod('sendData',{'byteArray':byteArray});
   }
 }
