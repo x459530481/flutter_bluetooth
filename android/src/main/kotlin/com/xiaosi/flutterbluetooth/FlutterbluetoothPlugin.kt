@@ -1,6 +1,5 @@
 package com.xiaosi.flutterbluetooth
 
-import android.R
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
@@ -25,7 +24,7 @@ import java.util.*
 class FlutterbluetoothPlugin: MethodCallHandler {
 
   var mBluetoothAdapter:BluetoothAdapter? = null;
-  var mBtAdapter: BluetoothAdapter? = null
+//  var mBtAdapter: BluetoothAdapter? = null
   var mReaderHelper: ReaderHelper? = null
 
     val myuuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
@@ -46,7 +45,9 @@ class FlutterbluetoothPlugin: MethodCallHandler {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else if (call.method == "init") {
+      println("init111111111111111111");
       mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+      println("initaaaaaaaaaa");
       if (mBluetoothAdapter == null) {
 //        showTextToast("没有发现蓝牙模块,程序中止");
 //        finish();
@@ -54,6 +55,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         return;
       }
 
+      println("initbbbbbbbb");
       // Register for broadcasts when a device is discovered
       var filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
       mActivity?.registerReceiver(mReceiver, filter)
@@ -62,12 +64,15 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       filter = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
       mActivity?.registerReceiver(mReceiver, filter)
 
+      println("initcccccccc");
       // Get the local Bluetooth adapter
-      mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+      mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+      println("initdddddddd");
       result.success("Success")
     } else if (call.method == "connting") {
-      mBtAdapter?.cancelDiscovery()
+      println("connting2222222222222222222");
+      mBluetoothAdapter?.cancelDiscovery()
       var macAddress = ""
       if (call.hasArgument("macAddress")) {
         macAddress = call.argument<Any>("macAddress").toString()
@@ -86,9 +91,11 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       handler.sendMessage(message)
       result.success("Success")
     } else if (call.method == "discovery") {
+      println("discovery333333333333");
         doDiscovery()
     } else if (call.method == "cancelDiscovery") {
-        mBtAdapter?.cancelDiscovery()
+      println("cancelDiscovery4444444444444");
+      mBluetoothAdapter?.cancelDiscovery()
     }  else {
       result.notImplemented()
     }
@@ -109,14 +116,24 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 //        findViewById(R.id.title_paired_devices).setVisibility(View.GONE)
 //        findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE)
 
+      println("doDiscoveryaaaaaaaaaa");
         // If we're already discovering, stop it
-        if (mBtAdapter!!.isDiscovering) {
-            mBtAdapter!!.cancelDiscovery()
+        if (mBluetoothAdapter!!.isDiscovering) {
+          println("doDiscoverybbbbbbbbb");
+          mBluetoothAdapter!!.cancelDiscovery()
         }
 //        mNewDevicesArrayAdapter.clear()
 //        mNewDevicesArrayAdapter.notifyDataSetChanged()
+      println("doDiscoverycccccc");
         // Request discover from BluetoothAdapter
-        mBtAdapter!!.startDiscovery()
+      try{
+        if(mBluetoothAdapter == null){
+          println("mBluetoothAdapter == null");
+        }
+        mBluetoothAdapter!!.startDiscovery()
+      }catch (e:Exception){
+        println(e.toString())
+      }
     }
 
   @SuppressLint("HandlerLeak")
@@ -181,9 +198,11 @@ class FlutterbluetoothPlugin: MethodCallHandler {
   // changes the title when discovery is finished
   private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+      println("onReceiveaaaaaaaaaa");
       val action = intent.action
       // When discovery finds a device
       if (BluetoothDevice.ACTION_FOUND == action) {
+        println("onReceivebbbbbbbb");
         // Get the BluetoothDevice object from the Intent
         val device: BluetoothDevice = intent!!.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
         if (device.name == null) return
@@ -196,6 +215,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 
         // When discovery is finished, change the Activity title
       } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED == action) {
+        println("onReceiveccccccc");
         // 停止扫描蓝牙
           mChannel!!.invokeMethod("found_finish","found_finish")
       }
