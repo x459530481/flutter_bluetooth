@@ -247,7 +247,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 
                     val msg = Message()
                     msg.what = 999
-                    msg.obj = buffer
+                    msg.obj = utf8tzt
                     sendMessage(msg)
                   }
                   
