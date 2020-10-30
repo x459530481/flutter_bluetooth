@@ -219,13 +219,16 @@ class FlutterbluetoothPlugin: MethodCallHandler {
                   Thread.sleep(1000)
                   if (mInputStream!!.available() > 0) {
                     val buffer:ByteArray = ByteArray(mInputStream!!.available())
+                    
                     mInputStream!!.read(buffer)
                     for (index in 0..buffer.size-1){
-                      println(buffer.get(index))
+                      println(hexStr2Str(buffer.get(index).toString()))
                     }
                     println("buffer="+buffer)
                     val utf8tzt = String(buffer, Charsets.UTF_8)
                     println("utf8tzt="+utf8tzt)
+
+//                    println("hexStr2Str="+hexStr2Str(buffer.toUByteArray().))
 //                    //                                    String isotzt = new String(buffer,"ISO-8859-1" );
 ////                                    String gb2312tzt = new String(buffer,"GB2312" );
 ////                                    String gbktzt = new String(buffer,"GBK" );
@@ -272,6 +275,20 @@ class FlutterbluetoothPlugin: MethodCallHandler {
     }
   }
 
+
+  //解析：将16进制的字符串 hex转ascii字符串
+  fun hexStr2Str(hexStr: String): String? {
+    val str = "0123456789ABCDEF"
+    val hexs = hexStr.toCharArray()
+    val bytes = ByteArray(hexStr.length / 2)
+    var n: Int
+    for (i in bytes.indices) {
+      n = str.indexOf(hexs[2 * i]) * 16
+      n += str.indexOf(hexs[2 * i + 1])
+      bytes[i] = (n and 0xff).toByte()
+    }
+    return String(bytes)
+  }
 
   // The BroadcastReceiver that listens for discovered devices and
   // changes the title when discovery is finished
