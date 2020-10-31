@@ -40,8 +40,8 @@ class Flutterbluetooth {
   static Future<void> hex2utf8(String hexStr) async {
     return _channel.invokeMethod('hex2utf8',{'hexStr':hexStr});
   }
-  //发送命令 检测连接状态（会触发连接失败）
-  static Future<void> checkConnected() async {
-    return _channel.invokeMethod('checkConnected');
-  }
+//  //发送命令 检测连接状态（会触发连接失败）用sendData判断连接状态 发送内容自定义
+//  static Future<void> checkConnected() async {
+//    return _channel.invokeMethod('checkConnected');
+//  }
 }
