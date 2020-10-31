@@ -282,9 +282,12 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 ////                    msg.obj = utf8tzt
 ////                    sendMessage(msg)
 
+//                    val mMap = mapOf("\"origin_bytes\"" to '"' +buffferStrList+'"'
+//                            , "\"bytes_to_hex\"" to '"' + bytesToHexStr!! +'"'
+//                            , "\"bytes_to_utf8\"" to '"' + utf8tzt +'"')
+
                     val mMap = mapOf("\"origin_bytes\"" to '"' +buffferStrList+'"'
-                            , "\"bytes_to_hex\"" to '"' + bytesToHexStr!! +'"'
-                            , "\"bytes_to_utf8\"" to '"' + utf8tzt +'"')
+                            , "\"bytes_to_hex\"" to '"' + bytesToHexStr!! +'"')
 
                     val msg = Message()
                     msg.what = 999
