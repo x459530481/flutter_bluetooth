@@ -49,6 +49,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else if (call.method == "init") {
+      //初始化
       mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
       if (mBluetoothAdapter == null) {
         println("没有发现蓝牙模块,程序中止");
@@ -76,6 +77,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 
       result.success("Success")
     } else if (call.method == "connting") {
+      //连接蓝牙
       mBluetoothAdapter?.cancelDiscovery()
       var macAddress = ""
       if (call.hasArgument("macAddress")) {
@@ -91,14 +93,17 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       handler.sendMessage(message)
       result.success("Success")
     } else if (call.method == "disconnect") {
+      //断开蓝牙连接
       if(newserial != null && !newserial!!.isConnected){
         newserial!!.close()
       }
       mChannel!!.invokeMethod("disconnect_success","disconnect_success")
       result.success("Success")
     } else if (call.method == "discovery") {
+      //搜索蓝牙
         doDiscovery()
     } else if (call.method == "cancelDiscovery") {
+      //取消搜索蓝牙
       try{
         if(mBluetoothAdapter == null){
           println("mBluetoothAdapter == null");
@@ -112,6 +117,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         handler.sendEmptyMessage(-1)
       }
     } else if (call.method == "sendData") {
+      //发送消息
       var data: ByteArray? = call.argument<ByteArray>("byteArray")
       sendData(data);
     }  else {
@@ -227,8 +233,8 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 ////                      println(bytesToHexString(buffer.get(index).to))
 ////                    }
 //                    println("buffer="+buffer)
-//                    val utf8tzt = String(buffer, Charsets.UTF_8)
-//                    println("utf8tzt="+utf8tzt)
+                    val utf8tzt = String(buffer, Charsets.UTF_8)
+                    println("utf8tzt="+utf8tzt)
 //
 ////                    println("hexStr2Str="+hexStr2Str(buffer.toUByteArray().))
 ////                    //                                    String isotzt = new String(buffer,"ISO-8859-1" );
@@ -245,9 +251,13 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 ////                    msg.obj = utf8tzt
 ////                    sendMessage(msg)
 
+                    val mMap = mapOf("\"origin_bytes\"" to '"' +buffer.toString() +'"'
+                            , "\"bytes_to_hex\"" to '"' + bytesToHexString(buffer)!!.split(" ").toString() +'"'
+                            , "\"bytes_to_utf8\"" to '"' + utf8tzt +'"')
+
                     val msg = Message()
                     msg.what = 999
-                    msg.obj = bytesToHexString(buffer)!!.split(" ")
+                    msg.obj = mMap
                     sendMessage(msg)
                   }
                   
