@@ -9,16 +9,21 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Handler
 import android.os.Message
+import androidx.annotation.RequiresApi
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import java.io.File.separator
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.util.*
 import kotlin.experimental.and
 
@@ -120,7 +125,21 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       //发送消息
       var data: ByteArray? = call.argument<ByteArray>("byteArray")
       sendData(data);
-    }  else {
+    }  else if (call.method == "hex2utf8") {
+      //转换文字
+      var hexStr: String? = call.argument<String>("hexStr")
+      var utf8Str = hexStringToString(hexStr)
+      if(utf8Str != null){
+        result.success(utf8Str)
+        val message = Message()
+        message.what = 1000
+        message.obj = utf8Str
+        handler.sendMessage(message)
+      }else{
+        result.error("","","")
+        handler.sendEmptyMessage(-1000)
+      }
+    } else {
       result.notImplemented()
     }
   }
@@ -226,13 +245,14 @@ class FlutterbluetoothPlugin: MethodCallHandler {
                   Thread.sleep(1000)
                   if (mInputStream!!.available() > 0) {
                     val buffer:ByteArray = ByteArray(mInputStream!!.available())
-                    
                     mInputStream!!.read(buffer)
-                    println(bytesToHexString(buffer))
-////                    for (index in 0..buffer.size-1){
-////                      println(bytesToHexString(buffer.get(index).to))
-////                    }
-//                    println("buffer="+buffer)
+
+                    var buffferStrList = buffer.joinToString(separator = ",")
+                    println("buffferStrList="+buffferStrList)
+
+                    var bytesToHexStr = bytesToHexString(buffer)
+                    println("bytesToHexStr="+bytesToHexStr)
+
                     val utf8tzt = String(buffer, Charsets.UTF_8)
                     println("utf8tzt="+utf8tzt)
 //
@@ -251,8 +271,8 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 ////                    msg.obj = utf8tzt
 ////                    sendMessage(msg)
 
-                    val mMap = mapOf("\"origin_bytes\"" to '"' +buffer.toString() +'"'
-                            , "\"bytes_to_hex\"" to '"' + bytesToHexString(buffer)!!.split(" ").toString() +'"'
+                    val mMap = mapOf("\"origin_bytes\"" to '"' +buffferStrList+'"'
+                            , "\"bytes_to_hex\"" to '"' + bytesToHexStr!! +'"'
                             , "\"bytes_to_utf8\"" to '"' + utf8tzt +'"')
 
                     val msg = Message()
@@ -283,6 +303,10 @@ class FlutterbluetoothPlugin: MethodCallHandler {
           mChannel!!.invokeMethod("connection_failed","connection_failed")
       } else if (msg.what === 999) {
         mChannel!!.invokeMethod("received",msg.obj)
+      } else if (msg.what === 1000) {
+        mChannel!!.invokeMethod("hex2utf8_successful",msg.obj)
+      } else if (msg.what === -1000) {
+        mChannel!!.invokeMethod("hex2utf8_error","hex2utf8_error")
       }
     }
   }
@@ -306,6 +330,44 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       }
     }
     return sb.toString()
+  }
+
+  /**
+   * 16进制字符串转换为字符串
+   *
+   * @param s
+   * @return
+   */
+  fun hexStringToString(s: String?): String? {
+    var s = s
+    if (s == null || s == "") {
+      return null
+    }
+    s = s.replace("{","")
+    s = s.replace("}","")
+    s = s.replace("[","")
+    s = s.replace("]","")
+    s = s.replace("(","")
+    s = s.replace(")","")
+    s = s.replace(",","")
+    s = s.replace(" ", "")
+    val baKeyword = ByteArray(s.length / 2)
+    for (i in baKeyword.indices) {
+      try {
+        baKeyword[i] = (0xff and
+                s.substring(i * 2, i * 2 + 2).toInt(16)).toByte()
+      } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+      }
+    }
+    try {
+      s = String(baKeyword, Charsets.UTF_8)
+//      s = String(baKeyword, StandardCharsets.UTF_8)
+      String()
+    } catch (e1: java.lang.Exception) {
+      e1.printStackTrace()
+    }
+    return s
   }
 
   // The BroadcastReceiver that listens for discovered devices and

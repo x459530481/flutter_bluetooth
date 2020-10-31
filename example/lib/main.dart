@@ -59,6 +59,14 @@ class _MyAppState extends State<MyApp> {
           //蓝牙接收到的消息
           log(handler.arguments.toString());
           break;
+        case "hex2utf8_successful":
+          //接收转换成功后的值
+          log(handler.arguments.toString());
+          break;
+        case "hex2utf8_error":
+        //接收转换失败
+          log(handler.arguments.toString());
+          break;
       }
     });
 

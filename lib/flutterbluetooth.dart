@@ -36,4 +36,8 @@ class Flutterbluetooth {
   static Future<void> sendData(Uint8List byteArray) async {
     return _channel.invokeMethod('sendData',{'byteArray':byteArray});
   }
+  //发送命令 转换hex2utf8（会触发转换成功、失败）
+  static Future<void> hex2utf8(String hexStr) async {
+    return _channel.invokeMethod('hex2utf8',{'hexStr':hexStr});
+  }
 }
