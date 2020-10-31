@@ -253,7 +253,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
                     var bytesToHexStr = bytesToHexString(buffer)
                     println("bytesToHexStr="+bytesToHexStr)
 
-                    val utf8tzt = String(buffer, Charsets.UTF_8)
+                    val utf8tzt = String(buffer, Charsets.UTF_8).toString().trim()
                     println("utf8tzt="+utf8tzt)
 //
 ////                    println("hexStr2Str="+hexStr2Str(buffer.toUByteArray().))
