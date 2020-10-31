@@ -139,7 +139,16 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         result.error("","","")
         handler.sendEmptyMessage(-1000)
       }
-    } else {
+    } else if (call.method == "checkConnected") {
+      try{
+        if (newserial == null || !newserial!!.isConnected) {
+          handler.sendEmptyMessage(-1)
+        }
+      }catch (e:Exception){
+        handler.sendEmptyMessage(-1)
+      }
+      result.success("Success")
+    }else {
       result.notImplemented()
     }
   }
