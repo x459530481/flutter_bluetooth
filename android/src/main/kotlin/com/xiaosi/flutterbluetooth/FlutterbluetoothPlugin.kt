@@ -225,7 +225,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
           } catch (e: Exception) {
             try {
               newserial!!.close()
-            } catch (e1: IOException) {
+            } catch (e1: Exception) {
               e1.printStackTrace()
             }
             this.sendEmptyMessage(-1)
