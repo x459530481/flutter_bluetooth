@@ -200,6 +200,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         if (mBluetoothAdapter!!.isDiscovering) {
           mBluetoothAdapter!!.cancelDiscovery()
         }
+        mChannel!!.invokeMethod("start_discovery","start_discovery")
         mBluetoothAdapter!!.startDiscovery()
       }catch (e:Exception){
         println(e.toString())
