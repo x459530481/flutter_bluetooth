@@ -216,7 +216,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         Thread(Runnable {
           
           try {
-            if(newserial != null && !newserial!!.isConnected){
+            if(newserial != null && newserial!!.isConnected){
               newserial!!.close()
             }
             val device: BluetoothDevice? = mBluetoothAdapter?.getRemoteDevice(address)
@@ -224,7 +224,9 @@ class FlutterbluetoothPlugin: MethodCallHandler {
             newserial?.connect()
           } catch (e: Exception) {
             try {
-              newserial!!.close()
+              if(newserial != null && newserial!!.isConnected){
+                newserial!!.close()
+              }
             } catch (e1: Exception) {
               e1.printStackTrace()
             }
