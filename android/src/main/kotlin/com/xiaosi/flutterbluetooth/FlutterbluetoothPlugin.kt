@@ -489,7 +489,10 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 //        }
       }else if(action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
         //指明一个与远程设备建立的低级别（ACL）连接。
-        handler.sendEmptyMessage(1)
+        val message = Message()
+        message.what = 1
+        message.obj = address
+        handler.sendMessage(message)
       }else if(action.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)){
         //指明一个来自于远程设备的低级别（ACL）连接的断开
         handler.sendEmptyMessage(-11)
