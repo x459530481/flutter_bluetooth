@@ -55,13 +55,13 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
       if (mBluetoothAdapter == null) {
         println("没有发现蓝牙模块,程序中止");
-        result.error("no_bluetooth","no_bluetooth","no_bluetooth")
+//        result.error("no_bluetooth","no_bluetooth","no_bluetooth")
         mChannel!!.invokeMethod("no_bluetooth","no_bluetooth")
         return;
       }
       if (!mBluetoothAdapter!!.isEnabled) {
         println("蓝牙功能尚未打开,程序中止");
-        result.error("no_enabled_bluetooth","no_enabled_bluetooth","no_enabled_bluetooth")
+//        result.error("no_enabled_bluetooth","no_enabled_bluetooth","no_enabled_bluetooth")
         mChannel!!.invokeMethod("no_enabled_bluetooth","no_enabled_bluetooth")
         return;
       }
@@ -148,7 +148,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         message.obj = utf8Str
         handler.sendMessage(message)
       }else{
-        result.error("","","")
+//        result.error("","","")
         handler.sendEmptyMessage(-1000)
       }
     } else if (call.method == "checkConnected") {
