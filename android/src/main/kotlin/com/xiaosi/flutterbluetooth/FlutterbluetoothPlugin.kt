@@ -91,7 +91,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 
       // Get the local Bluetooth adapter
       mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
+      mChannel!!.invokeMethod("init_success","init_success")
       result.success("Success")
     } else if (call.method == "connting") {
       //连接蓝牙

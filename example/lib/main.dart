@@ -27,6 +27,10 @@ class _MyAppState extends State<MyApp> {
     this._channel = new MethodChannel('flutterbluetooth');
     this._channel.setMethodCallHandler((handler) {
       switch (handler.method) {
+        case "init_success":
+          //连接成功
+          log(handler.arguments.toString());
+          break;
         case "connection_successful":
           //连接成功
           log(handler.arguments.toString());
