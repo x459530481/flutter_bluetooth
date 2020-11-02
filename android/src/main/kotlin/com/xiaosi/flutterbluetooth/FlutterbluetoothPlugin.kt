@@ -329,10 +329,10 @@ class FlutterbluetoothPlugin: MethodCallHandler {
           mChannel!!.invokeMethod("connection_failed","connection_failed")
       } else if (msg.what === -11) {
         mChannel!!.invokeMethod("connection_failed_11","connection_failed_11")
-      } else if (msg.what === 11) {
-        mChannel!!.invokeMethod("connection_successful_11","connection_successful_11")
-      } else if (msg.what === -12) {
-        mChannel!!.invokeMethod("connecting","connecting")
+//      } else if (msg.what === 11) {
+//        mChannel!!.invokeMethod("connection_successful_11","connection_successful_11")
+//      } else if (msg.what === -12) {
+//        mChannel!!.invokeMethod("connecting","connecting")
       }  else if (msg.what === 999) {
         mChannel!!.invokeMethod("received",msg.obj)
       } else if (msg.what === 1000) {
@@ -444,66 +444,58 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 //        if (device.address.equals(address,true)) {
 //          connectState = device.getBondState();
 //          when (connectState) {
-//            BluetoothDevice.BOND_NONE -> handler.sendEmptyMessage(-11)//删除配对
+//            BluetoothDevice.BOND_NONE -> {}//删除配对
 //
-//            BluetoothDevice.BOND_BONDING -> handler.sendEmptyMessage(-12)//正在配对
+//            BluetoothDevice.BOND_BONDING -> {}//正在配对
 //
-//            BluetoothDevice.BOND_BONDED -> handler.sendEmptyMessage(11)//配对成功
+//            BluetoothDevice.BOND_BONDED -> {}//配对成功
 //          }
 //        }
-      }else if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
-        val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                BluetoothAdapter.ERROR)
-        // 蓝牙设备状态的广播
-        when (state) {
-          BluetoothAdapter.STATE_OFF -> {
-            //手机蓝牙关闭
-            val message = Message()
-            message.what = 1000
-            message.obj = "BluetoothAdapter.STATE_OFF"
-            handler.sendMessage(message)
-          }
-          BluetoothAdapter.STATE_TURNING_OFF -> {
-            //手机蓝牙正在关闭
-            val message = Message()
-            message.what = 1000
-            message.obj = "BluetoothAdapter.STATE_TURNING_OFF"
-            handler.sendMessage(message)
-          }
-          BluetoothAdapter.STATE_ON -> {
-            //手机蓝牙开启
-            val message = Message()
-            message.what = 1000
-            message.obj = "BluetoothAdapter.STATE_ON"
-            handler.sendMessage(message)
-          }
-          BluetoothAdapter.STATE_TURNING_ON -> {
-            //手机蓝牙正在开启
-            val message = Message()
-            message.what = 1000
-            message.obj = "BluetoothAdapter.STATE_TURNING_ON"
-            handler.sendMessage(message)
-          }
-        }
+//      }else if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
+//        val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+//                BluetoothAdapter.ERROR)
+//        // 蓝牙设备状态的广播
+//        when (state) {
+//          BluetoothAdapter.STATE_OFF -> {
+//            //手机蓝牙关闭
+//            val message = Message()
+//            message.what = 1000
+//            message.obj = "BluetoothAdapter.STATE_OFF"
+//            handler.sendMessage(message)
+//          }
+//          BluetoothAdapter.STATE_TURNING_OFF -> {
+//            //手机蓝牙正在关闭
+//            val message = Message()
+//            message.what = 1000
+//            message.obj = "BluetoothAdapter.STATE_TURNING_OFF"
+//            handler.sendMessage(message)
+//          }
+//          BluetoothAdapter.STATE_ON -> {
+//            //手机蓝牙开启
+//            val message = Message()
+//            message.what = 1000
+//            message.obj = "BluetoothAdapter.STATE_ON"
+//            handler.sendMessage(message)
+//          }
+//          BluetoothAdapter.STATE_TURNING_ON -> {
+//            //手机蓝牙正在开启
+//            val message = Message()
+//            message.what = 1000
+//            message.obj = "BluetoothAdapter.STATE_TURNING_ON"
+//            handler.sendMessage(message)
+//          }
+//        }
       }else if(action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
         //指明一个与远程设备建立的低级别（ACL）连接。
-        val message = Message()
-        message.what = 1000
-        message.obj = "BluetoothDevice.ACTION_ACL_CONNECTED"
-        handler.sendMessage(message)
+        handler.sendEmptyMessage(1)
       }else if(action.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)){
         //指明一个来自于远程设备的低级别（ACL）连接的断开
-        val message = Message()
-        message.what = 1000
-        message.obj = "BluetoothDevice.ACTION_ACL_DISCONNECTED"
-        handler.sendMessage(message)
-      }else if(action.equals(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)){
-        //指明一个为远程设备提出的低级别（ACL）的断开连接请求，并即将断开连接。
-        val message = Message()
-        message.what = 1000
-        message.obj = "BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED"
-        handler.sendMessage(message)
+        handler.sendEmptyMessage(-11)
       }
+//      else if(action.equals(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)){
+//        //指明一个为远程设备提出的低级别（ACL）的断开连接请求，并即将断开连接。
+//        handler.sendEmptyMessage(-12)
+//      }
 
     }
   }
