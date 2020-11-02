@@ -35,6 +35,8 @@ class FlutterbluetoothPlugin: MethodCallHandler {
   var newserial: BluetoothSocket? = null
   var mInputStream: InputStream? = null
   var mOutputStream: OutputStream? = null
+  var address:String = ""
+  var connectState = -1;
 
   val myuuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
   companion object {
@@ -89,7 +91,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         macAddress = call.argument<Any>("macAddress").toString()
       }
       if (macAddress.length < 17) return
-      val address = macAddress.substring(macAddress.length - 17)
+      address = macAddress.substring(macAddress.length - 17)
       // Get the device MAC address, which is the last 17 chars in the View
 
       val message = Message()
@@ -315,7 +317,13 @@ class FlutterbluetoothPlugin: MethodCallHandler {
           mChannel!!.invokeMethod("connection_successful",msg.obj)
       } else if (msg.what === -1) {
           mChannel!!.invokeMethod("connection_failed","connection_failed")
-      } else if (msg.what === 999) {
+      } else if (msg.what === -11) {
+        mChannel!!.invokeMethod("connection_failed_11","connection_failed_11")
+      } else if (msg.what === 11) {
+        mChannel!!.invokeMethod("connection_successful_11","connection_successful_11")
+      } else if (msg.what === -12) {
+        mChannel!!.invokeMethod("connecting","connecting")
+      }  else if (msg.what === 999) {
         mChannel!!.invokeMethod("received",msg.obj)
       } else if (msg.what === 1000) {
         mChannel!!.invokeMethod("hex2utf8_successful",msg.obj)
@@ -403,6 +411,21 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED == action) {
         // 停止扫描蓝牙
           mChannel!!.invokeMethod("found_finish","found_finish")
+      } else if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+        // 状态改变的广播
+//        intent.getParcelableExtra<>()
+        val device: BluetoothDevice = intent!!.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+        if (device.address == null) return
+        if (device.address.equals(address,true)) {
+          connectState = device.getBondState();
+          when (connectState) {
+            BluetoothDevice.BOND_NONE -> handler.sendEmptyMessage(-11)
+
+            BluetoothDevice.BOND_BONDING -> handler.sendEmptyMessage(-12)
+
+            BluetoothDevice.BOND_BONDED -> handler.sendEmptyMessage(11)
+          }
+        }
       }
     }
   }
