@@ -4,27 +4,21 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothDevice.ACTION_BOND_STATE_CHANGED
 import android.bluetooth.BluetoothSocket
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Handler
 import android.os.Message
-import androidx.annotation.RequiresApi
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
-import java.io.File.separator
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 import java.util.*
 import kotlin.experimental.and
 
@@ -74,14 +68,25 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 
       // Register for broadcasts when a device is discovered
       var filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-      mActivity?.registerReceiver(mReceiver, filter)
+//      mActivity?.registerReceiver(mReceiver, filter)
 
       // Register for broadcasts when discovery has finished
-      filter = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-      mActivity?.registerReceiver(mReceiver, filter)
+//      filter = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+      filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+//      mActivity?.registerReceiver(mReceiver, filter)
 
       // Register for broadcasts when discovery has finished
-      filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+//      filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+      filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+//      mActivity?.registerReceiver(mReceiver, filter)
+
+
+      filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+
+      filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);//指明一个与远程设备建立的低级别（ACL）连接。
+      filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);//指明一个来自于远程设备的低级别（ACL）连接的断开
+      filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);//指明一个为远程设备提出的低级别（ACL）的断开连接请求，并即将断开连接。
+
       mActivity?.registerReceiver(mReceiver, filter)
 
       // Get the local Bluetooth adapter
@@ -431,7 +436,75 @@ class FlutterbluetoothPlugin: MethodCallHandler {
             BluetoothDevice.BOND_BONDED -> handler.sendEmptyMessage(11)
           }
         }
+      } else if(BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+//        // 配对状态的广播
+////        intent.getParcelableExtra<>()
+//        val device: BluetoothDevice = intent!!.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+//        if (device.address == null) return
+//        if (device.address.equals(address,true)) {
+//          connectState = device.getBondState();
+//          when (connectState) {
+//            BluetoothDevice.BOND_NONE -> handler.sendEmptyMessage(-11)//删除配对
+//
+//            BluetoothDevice.BOND_BONDING -> handler.sendEmptyMessage(-12)//正在配对
+//
+//            BluetoothDevice.BOND_BONDED -> handler.sendEmptyMessage(11)//配对成功
+//          }
+//        }
+      }else if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
+        val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                BluetoothAdapter.ERROR)
+        // 蓝牙设备状态的广播
+        when (state) {
+          BluetoothAdapter.STATE_OFF -> {
+            //手机蓝牙关闭
+            val message = Message()
+            message.what = 1000
+            message.obj = "BluetoothAdapter.STATE_OFF"
+            handler.sendMessage(message)
+          }
+          BluetoothAdapter.STATE_TURNING_OFF -> {
+            //手机蓝牙正在关闭
+            val message = Message()
+            message.what = 1000
+            message.obj = "BluetoothAdapter.STATE_TURNING_OFF"
+            handler.sendMessage(message)
+          }
+          BluetoothAdapter.STATE_ON -> {
+            //手机蓝牙开启
+            val message = Message()
+            message.what = 1000
+            message.obj = "BluetoothAdapter.STATE_ON"
+            handler.sendMessage(message)
+          }
+          BluetoothAdapter.STATE_TURNING_ON -> {
+            //手机蓝牙正在开启
+            val message = Message()
+            message.what = 1000
+            message.obj = "BluetoothAdapter.STATE_TURNING_ON"
+            handler.sendMessage(message)
+          }
+        }
+      }else if(action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
+        //指明一个与远程设备建立的低级别（ACL）连接。
+        val message = Message()
+        message.what = 1000
+        message.obj = "BluetoothDevice.ACTION_ACL_CONNECTED"
+        handler.sendMessage(message)
+      }else if(action.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)){
+        //指明一个来自于远程设备的低级别（ACL）连接的断开
+        val message = Message()
+        message.what = 1000
+        message.obj = "BluetoothDevice.ACTION_ACL_DISCONNECTED"
+        handler.sendMessage(message)
+      }else if(action.equals(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)){
+        //指明一个为远程设备提出的低级别（ACL）的断开连接请求，并即将断开连接。
+        val message = Message()
+        message.what = 1000
+        message.obj = "BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED"
+        handler.sendMessage(message)
       }
+
     }
   }
 
