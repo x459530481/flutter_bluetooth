@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothDevice.ACTION_BOND_STATE_CHANGED
 import android.bluetooth.BluetoothSocket
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -77,6 +78,10 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 
       // Register for broadcasts when discovery has finished
       filter = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+      mActivity?.registerReceiver(mReceiver, filter)
+
+      // Register for broadcasts when discovery has finished
+      filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
       mActivity?.registerReceiver(mReceiver, filter)
 
       // Get the local Bluetooth adapter
