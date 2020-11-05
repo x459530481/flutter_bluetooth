@@ -239,10 +239,10 @@ class FlutterbluetoothPlugin: MethodCallHandler {
             return@Runnable
           }
           
-          val message = Message()
-          message.what = 1
-          message.obj = address
-          this.sendMessage(message)
+//          val message = Message()
+//          message.what = 1
+//          message.obj = address
+//          this.sendMessage(message)
           
           try {
 //            mReaderHelper = ReaderHelper.getDefaultHelper()
