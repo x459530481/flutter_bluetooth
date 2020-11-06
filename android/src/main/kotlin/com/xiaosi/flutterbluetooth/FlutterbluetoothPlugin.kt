@@ -439,7 +439,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
             BluetoothDevice.BOND_BONDED -> handler.sendEmptyMessage(11)
           }
         }
-      } else if(BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+      } else if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
 //        // 配对状态的广播
 ////        intent.getParcelableExtra<>()
 //        val device: BluetoothDevice = intent!!.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
@@ -454,18 +454,19 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 //            BluetoothDevice.BOND_BONDED -> {}//配对成功
 //          }
 //        }
-//      }else if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
-//        val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-//                BluetoothAdapter.ERROR)
-//        // 蓝牙设备状态的广播
-//        when (state) {
-//          BluetoothAdapter.STATE_OFF -> {
-//            //手机蓝牙关闭
+      }else if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
+        val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                BluetoothAdapter.ERROR)
+        // 蓝牙设备状态的广播
+        when (state) {
+          BluetoothAdapter.STATE_OFF -> {
+            //手机蓝牙关闭
 //            val message = Message()
 //            message.what = 1000
 //            message.obj = "BluetoothAdapter.STATE_OFF"
 //            handler.sendMessage(message)
-//          }
+            mChannel!!.invokeMethod("disconnect_success","disconnect_success")
+          }
 //          BluetoothAdapter.STATE_TURNING_OFF -> {
 //            //手机蓝牙正在关闭
 //            val message = Message()
@@ -487,7 +488,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 //            message.obj = "BluetoothAdapter.STATE_TURNING_ON"
 //            handler.sendMessage(message)
 //          }
-//        }
+        }
       }else if(action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
         //指明一个与远程设备建立的低级别（ACL）连接。
         val message = Message()
