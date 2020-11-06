@@ -474,13 +474,10 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 //            message.obj = "BluetoothAdapter.STATE_TURNING_OFF"
 //            handler.sendMessage(message)
 //          }
-//          BluetoothAdapter.STATE_ON -> {
-//            //手机蓝牙开启
-//            val message = Message()
-//            message.what = 1000
-//            message.obj = "BluetoothAdapter.STATE_ON"
-//            handler.sendMessage(message)
-//          }
+          BluetoothAdapter.STATE_ON -> {
+            //手机蓝牙开启
+            mChannel!!.invokeMethod("enabled_bluetooth","enabled_bluetooth")
+          }
 //          BluetoothAdapter.STATE_TURNING_ON -> {
 //            //手机蓝牙正在开启
 //            val message = Message()

@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
     this._channel.setMethodCallHandler((handler) {
       switch (handler.method) {
         case "init_success":
-          //连接成功
+          //蓝牙初始化成功
           log(handler.arguments.toString());
           break;
         case "connection_successful":
@@ -69,6 +69,10 @@ class _MyAppState extends State<MyApp> {
           break;
         case "no_enabled_bluetooth":
           //设备有蓝牙但未启用
+          log(handler.arguments.toString());
+          break;
+        case "enabled_bluetooth":
+          //蓝牙启用
           log(handler.arguments.toString());
           break;
         case "received":
