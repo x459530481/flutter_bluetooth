@@ -52,6 +52,23 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else if (call.method == "init") {
       //初始化
+      // Register for broadcasts when a device is discovered
+      var filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+
+      // Register for broadcasts when discovery has finished
+      filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+
+      // Register for broadcasts when discovery has finished
+      filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+
+      filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+
+      filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);//指明一个与远程设备建立的低级别（ACL）连接。
+      filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);//指明一个来自于远程设备的低级别（ACL）连接的断开
+      filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);//指明一个为远程设备提出的低级别（ACL）的断开连接请求，并即将断开连接。
+
+      mActivity?.registerReceiver(mReceiver, filter)
+
       mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
       if (mBluetoothAdapter == null) {
         println("没有发现蓝牙模块,程序中止");
@@ -65,29 +82,6 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         mChannel!!.invokeMethod("no_enabled_bluetooth","no_enabled_bluetooth")
         return;
       }
-
-      // Register for broadcasts when a device is discovered
-      var filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-//      mActivity?.registerReceiver(mReceiver, filter)
-
-      // Register for broadcasts when discovery has finished
-//      filter = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-      filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-//      mActivity?.registerReceiver(mReceiver, filter)
-
-      // Register for broadcasts when discovery has finished
-//      filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
-      filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
-//      mActivity?.registerReceiver(mReceiver, filter)
-
-
-      filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-
-      filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);//指明一个与远程设备建立的低级别（ACL）连接。
-      filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);//指明一个来自于远程设备的低级别（ACL）连接的断开
-      filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);//指明一个为远程设备提出的低级别（ACL）的断开连接请求，并即将断开连接。
-
-      mActivity?.registerReceiver(mReceiver, filter)
 
       // Get the local Bluetooth adapter
       mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
