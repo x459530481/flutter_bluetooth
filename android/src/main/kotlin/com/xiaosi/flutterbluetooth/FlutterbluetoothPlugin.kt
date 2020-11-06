@@ -459,7 +459,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 //            message.what = 1000
 //            message.obj = "BluetoothAdapter.STATE_OFF"
 //            handler.sendMessage(message)
-            mChannel!!.invokeMethod("disconnect_success","disconnect_success")
+            mChannel!!.invokeMethod("no_enabled_bluetooth","no_enabled_bluetooth")
           }
 //          BluetoothAdapter.STATE_TURNING_OFF -> {
 //            //手机蓝牙正在关闭
