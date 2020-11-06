@@ -36,11 +36,11 @@ class _MyAppState extends State<MyApp> {
           log(handler.arguments.toString());
           break;
         case "connection_failed":
-          //连接出错
+          //连接时连接出错
           log(handler.arguments.toString());
           break;
         case "connection_failed_11":
-        //连接断开
+        //被动连接断开
           log(handler.arguments.toString());
           break;
 //        case "connection_successful_11":
@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
 //          log(handler.arguments.toString());
 //          break;
         case "disconnect_success":
-          //断开连接成功
+          //主动断开连接成功
           log(handler.arguments.toString());
           break;
         case "found_result":
