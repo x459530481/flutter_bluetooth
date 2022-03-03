@@ -26,7 +26,7 @@ import kotlin.experimental.and
 class FlutterbluetoothPlugin: MethodCallHandler {
 
   var mBluetoothAdapter:BluetoothAdapter? = null;
-//  var mReaderHelper: ReaderHelper? = null
+  //  var mReaderHelper: ReaderHelper? = null
   var newserial: BluetoothSocket? = null
   var mInputStream: InputStream? = null
   var mOutputStream: OutputStream? = null
@@ -37,13 +37,13 @@ class FlutterbluetoothPlugin: MethodCallHandler {
   companion object {
     var mContext: Context? = null
     var mActivity: Activity? = null
-      var mChannel:MethodChannel? = null
+    var mChannel:MethodChannel? = null
     @JvmStatic
     fun registerWith(registrar: Registrar) {
       mContext = registrar.activity().applicationContext
       mActivity = registrar.activity()
-        mChannel = MethodChannel(registrar.messenger(), "flutterbluetooth")
-        mChannel!!.setMethodCallHandler(FlutterbluetoothPlugin())
+      mChannel = MethodChannel(registrar.messenger(), "flutterbluetooth")
+      mChannel!!.setMethodCallHandler(FlutterbluetoothPlugin())
     }
   }
 
@@ -112,7 +112,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       result.success("Success")
     } else if (call.method == "discovery") {
       //搜索蓝牙
-        doDiscovery()
+      doDiscovery()
     } else if (call.method == "cancelDiscovery") {
       //取消搜索蓝牙
       try{
@@ -182,25 +182,25 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       handler.sendEmptyMessage(-1)
     }
   }
-    /**
-     * Start device discover with the BluetoothAdapter
-     */
-    private fun doDiscovery() {
-      try{
-        if(mBluetoothAdapter == null){
-          println("mBluetoothAdapter == null");
-        }
-        // If we're already discovering, stop it
-        if (mBluetoothAdapter!!.isDiscovering) {
-          mBluetoothAdapter!!.cancelDiscovery()
-        }
-        mChannel!!.invokeMethod("start_discovery","start_discovery")
-        mBluetoothAdapter!!.startDiscovery()
-      }catch (e:Exception){
-        println(e.toString())
-        handler.sendEmptyMessage(-1)
+  /**
+   * Start device discover with the BluetoothAdapter
+   */
+  private fun doDiscovery() {
+    try{
+      if(mBluetoothAdapter == null){
+        println("mBluetoothAdapter == null");
       }
+      // If we're already discovering, stop it
+      if (mBluetoothAdapter!!.isDiscovering) {
+        mBluetoothAdapter!!.cancelDiscovery()
+      }
+      mChannel!!.invokeMethod("start_discovery","start_discovery")
+      mBluetoothAdapter!!.startDiscovery()
+    }catch (e:Exception){
+      println(e.toString())
+      handler.sendEmptyMessage(-1)
     }
+  }
 
   @SuppressLint("HandlerLeak")
   var handler: Handler = object : Handler() {
@@ -209,7 +209,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       if (msg.what === 0) {
         val address:String = msg.obj as String
         Thread(Runnable {
-          
+
           try {
             if(newserial != null && newserial!!.isConnected){
               newserial!!.close()
@@ -232,12 +232,12 @@ class FlutterbluetoothPlugin: MethodCallHandler {
             this.sendEmptyMessage(-1)
             return@Runnable
           }
-          
+
 //          val message = Message()
 //          message.what = 1
 //          message.obj = address
 //          this.sendMessage(message)
-          
+
           try {
 //            mReaderHelper = ReaderHelper.getDefaultHelper()
 //            mReaderHelper!!.setReader(newserial!!.inputStream, newserial!!.outputStream)
@@ -296,14 +296,14 @@ class FlutterbluetoothPlugin: MethodCallHandler {
 //                            , "\"bytes_to_utf8\"" to '"' + utf8tzt +'"')
 
                     val mMap = mapOf("\"origin_bytes\"" to '"' +buffferStrList+'"'
-                            , "\"bytes_to_hex\"" to '"' + bytesToHexStr!! +'"')
+                      , "\"bytes_to_hex\"" to '"' + bytesToHexStr!! +'"')
 
                     val msg = Message()
                     msg.what = 999
                     msg.obj = mMap
                     sendMessage(msg)
                   }
-                  
+
                 } catch (e:Exception) {
                   println("mInputStream read is null")
                 }
@@ -321,9 +321,9 @@ class FlutterbluetoothPlugin: MethodCallHandler {
           }
         }).start()
       } else if (msg.what === 1) {
-          mChannel!!.invokeMethod("connection_successful",msg.obj)
+        mChannel!!.invokeMethod("connection_successful",msg.obj)
       } else if (msg.what === -1) {
-          mChannel!!.invokeMethod("connection_failed","connection_failed")
+        mChannel!!.invokeMethod("connection_failed","connection_failed")
       } else if (msg.what === -11) {
         mChannel!!.invokeMethod("connection_failed_11","connection_failed_11")
 //      } else if (msg.what === 11) {
@@ -404,6 +404,7 @@ class FlutterbluetoothPlugin: MethodCallHandler {
   private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
       val action = intent.action
+      mChannel!!.invokeMethod("broadcast_receiver_action",action)
       // When discovery finds a device
       if (BluetoothDevice.ACTION_FOUND == action) {
         // Get the BluetoothDevice object from the Intent
@@ -411,13 +412,13 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         if (device.name == null) return
 
         // 扫描到的设备是否存在于队列 如不存在则添加到队列
-          val mMap = mapOf("\"name\"" to '"' +device.name +'"', "\"address\"" to '"' +device.address +'"')
-          mChannel!!.invokeMethod("found_result",mMap)
+        val mMap = mapOf("\"name\"" to '"' +device.name +'"', "\"address\"" to '"' +device.address +'"')
+        mChannel!!.invokeMethod("found_result",mMap)
 
         // When discovery is finished, change the Activity title
       } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED == action) {
         // 停止扫描蓝牙
-          mChannel!!.invokeMethod("found_finish","found_finish")
+        mChannel!!.invokeMethod("found_finish","found_finish")
       } else if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
         // 状态改变的广播
 //        intent.getParcelableExtra<>()
@@ -436,21 +437,30 @@ class FlutterbluetoothPlugin: MethodCallHandler {
       } else if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
 //        // 配对状态的广播
 ////        intent.getParcelableExtra<>()
-//        val device: BluetoothDevice = intent!!.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-//        if (device.address == null) return
-//        if (device.address.equals(address,true)) {
-//          connectState = device.getBondState();
-//          when (connectState) {
-//            BluetoothDevice.BOND_NONE -> {}//删除配对
-//
-//            BluetoothDevice.BOND_BONDING -> {}//正在配对
-//
-//            BluetoothDevice.BOND_BONDED -> {}//配对成功
-//          }
-//        }
+        val device: BluetoothDevice = intent!!.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+        if (device.address == null) return
+        if (device.address.equals(address,true)) {
+          connectState = device.getBondState();
+          when (connectState) {
+            BluetoothDevice.BOND_NONE -> {
+
+              mChannel!!.invokeMethod("action_bond_state_changed","bond_none")
+            }//删除配对
+
+            BluetoothDevice.BOND_BONDING -> {
+
+              mChannel!!.invokeMethod("action_bond_state_changed","bond_bonding")
+            }//正在配对
+
+            BluetoothDevice.BOND_BONDED -> {
+
+              mChannel!!.invokeMethod("action_bond_state_changed","bond_bonded")
+            }//配对成功
+          }
+        }
       }else if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
         val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                BluetoothAdapter.ERROR)
+          BluetoothAdapter.ERROR)
         // 蓝牙设备状态的广播
         when (state) {
           BluetoothAdapter.STATE_OFF -> {
