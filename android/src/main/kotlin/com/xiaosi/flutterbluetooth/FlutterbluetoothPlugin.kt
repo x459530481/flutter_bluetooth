@@ -427,38 +427,49 @@ class FlutterbluetoothPlugin: MethodCallHandler {
         if (device.address.equals(address,true)) {
           connectState = device.getBondState();
           when (connectState) {
-            BluetoothDevice.BOND_NONE -> handler.sendEmptyMessage(-11)
-
-            BluetoothDevice.BOND_BONDING -> handler.sendEmptyMessage(-12)
-
-            BluetoothDevice.BOND_BONDED -> handler.sendEmptyMessage(11)
-          }
-        }
-      } else if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-//        // 配对状态的广播
-////        intent.getParcelableExtra<>()
-        val device: BluetoothDevice = intent!!.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-        if (device.address == null) return
-        if (device.address.equals(address,true)) {
-          connectState = device.getBondState();
-          when (connectState) {
             BluetoothDevice.BOND_NONE -> {
+              handler.sendEmptyMessage(-11);
+              mChannel!!.invokeMethod("action_bond_state_changed","bond_none");
+            }
 
-              mChannel!!.invokeMethod("action_bond_state_changed","bond_none")
-            }//删除配对
-
-            BluetoothDevice.BOND_BONDING -> {
-
+            BluetoothDevice.BOND_BONDING ->{
+              handler.sendEmptyMessage(-12);
               mChannel!!.invokeMethod("action_bond_state_changed","bond_bonding")
-            }//正在配对
+            }
 
-            BluetoothDevice.BOND_BONDED -> {
-
-              mChannel!!.invokeMethod("action_bond_state_changed","bond_bonded")
-            }//配对成功
+            BluetoothDevice.BOND_BONDED ->{
+              handler.sendEmptyMessage(11);
+              mChannel!!.invokeMethod("action_bond_state_changed","bond_bonded");
+            }
           }
         }
-      }else if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
+      }
+//      else if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+////        // 配对状态的广播
+//////        intent.getParcelableExtra<>()
+//        val device: BluetoothDevice = intent!!.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+//        if (device.address == null) return
+//        if (device.address.equals(address,true)) {
+//          connectState = device.getBondState();
+//          when (connectState) {
+//            BluetoothDevice.BOND_NONE -> {
+//
+//              mChannel!!.invokeMethod("action_bond_state_changed","bond_none")
+//            }//删除配对
+//
+//            BluetoothDevice.BOND_BONDING -> {
+//
+//              mChannel!!.invokeMethod("action_bond_state_changed","bond_bonding")
+//            }//正在配对
+//
+//            BluetoothDevice.BOND_BONDED -> {
+//
+//              mChannel!!.invokeMethod("action_bond_state_changed","bond_bonded")
+//            }//配对成功
+//          }
+//        }
+//      }
+      else if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
         val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
           BluetoothAdapter.ERROR)
         // 蓝牙设备状态的广播
